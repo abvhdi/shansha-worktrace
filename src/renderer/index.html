@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>珊莎工作留痕</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">痕</div>
+        <div><strong>珊莎工作留痕</strong><span>个人手账 · 本地收纳</span></div>
+      </div>
+      <nav>
+        <button class="nav-item active" data-view="today"><span>⌂</span>今天</button>
+        <button class="nav-item" data-view="timeline"><span>◇</span>项目管理</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="privacy-badge"><span>●</span> 原件仅保存在本地</div>
+        <button class="nav-item" id="openHelp"><span>?</span>帮助与联系</button>
+        <button class="nav-item" id="openSettings"><span>⚙</span>AI 与资料库设置</button>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div>
+          <p class="eyebrow" id="todayLabel"></p>
+          <h1 id="pageTitle">今天的工作记录</h1>
+        </div>
+        <div class="header-actions">
+          <button class="secondary new-project-button" id="openNewProject">项目管理</button>
+          <label class="search-box">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="搜索标题、内容或标签" />
+          </label>
+        </div>
+      </header>
+
+      <section id="setupBanner" class="setup-banner hidden">
+        <div>
+          <strong>先选择一个工作资料库</strong>
+          <p>原始文件和识别结果都会保存在你选择的文件夹中。</p>
+        </div>
+        <button class="primary" id="chooseLibrary">选择文件夹</button>
+      </section>
+
+      <section class="timeline-toolbar hidden" id="timelineToolbar">
+        <div class="timeline-left-tools">
+          <div class="segmented">
+            <button class="active" data-timeline-mode="chronological">全部记录</button>
+            <button data-timeline-mode="project">项目记录</button>
+            <button data-timeline-mode="tasks">任务列表</button>
+          </div>
+          <div class="segmented hidden" id="projectPageTabs">
+            <button class="active" data-project-page="timeline">项目记录</button>
+            <button data-project-page="overview">项目概览</button>
+          </div>
+        </div>
+        <label class="project-filter hidden" id="projectFilterWrap">查看项目<select id="projectFilter"></select></label>
+      </section>
+
+      <section class="task-page hidden" id="taskPage">
+        <div class="task-stats" id="taskStats"></div>
+        <form class="task-composer" id="taskComposer">
+          <div class="task-composer-head">
+            <div><h2>添加任务</h2><p>手工任务不会依附某个文件，可以单独管理。</p></div>
+            <button class="primary" type="submit" id="createTask">添加任务</button>
+          </div>
+          <input id="newTaskText" maxlength="300" required placeholder="输入需要完成的事情，例如：周五前提交合同修改稿" />
+          <div class="task-composer-fields">
+            <label>所属项目<select id="newTaskProject"><option value="">无项目</option></select></label>
+            <label>负责人<input id="newTaskOwner" maxlength="60" placeholder="可不填" /></label>
+            <label>截止日期<input id="newTaskDueDate" type="date" /></label>
+          </div>
+        </form>
+        <div class="task-toolbar">
+          <div class="segmented" id="taskStatusFilter">
+            <button class="active" data-task-status="open">未完成</button>
+            <button data-task-status="all">全部</button>
+            <button data-task-status="completed">已完成</button>
+          </div>
+          <label>筛选项目<select id="taskProjectFilter"><option value="">全部项目</option></select></label>
+        </div>
+        <div class="task-page-list" id="taskPageList"></div>
+      </section>
+
+      <section class="drop-card" id="dropZone">
+        <div class="drop-icon">⌁</div>
+        <h2>把今天的资料收进来</h2>
+        <p>截图、PDF、Word 和文字文件都可以；原件留在本地，之后仍能随时调整。</p>
+        <div class="drop-note-row"><span>✦ 本地保存</span><span>○ 自动归整</span><span>⌇ 随时可改</span></div>
+        <div class="drop-actions"><button class="primary" id="pickFiles">选择文件</button></div>
+        <div class="text-capture">
+          <div><strong>也可以直接输入文字</strong><span id="textCaptureHint">填写 API 密钥并开启 AI 后可用</span></div>
+          <textarea id="textCapture" maxlength="50000" disabled placeholder="输入一段工作记录；如果随后拖入图片或选择文件，这段文字会作为补充说明一起整理。"></textarea>
+          <button class="secondary" id="saveTextRecord" disabled>保存为文字记录</button>
+        </div>
+        <div class="progress-wrap hidden" id="progressWrap">
+          <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+          <span id="progressText">准备处理</span>
+        </div>
+      </section>
+
+      <section class="section-head" id="recordSectionHead">
+        <div><h2 id="recordHeading">最近记录</h2><span id="recordCount">0 条</span></div>
+        <div class="filter-pills" id="filters">
+          <button class="active" data-filter="全部">全部</button>
+        </div>
+      </section>
+
+      <section class="project-overview hidden" id="projectOverview"></section>
+      <section class="project-detail hidden" id="projectDetail"></section>
+
+      <section class="records" id="records"></section>
+      <section class="empty-state" id="emptyState">
+        <div>◎</div>
+        <h3>这里还没有记录</h3>
+        <p>添加第一份工作资料，看看本地读取和自动整理的效果。</p>
+      </section>
+    </main>
+
+    <dialog id="newProjectDialog" class="project-manager-dialog">
+      <form id="newProjectForm" class="project-manager-form">
+        <div class="dialog-head">
+          <div><p class="eyebrow">PROJECTS</p><h2>项目管理</h2></div>
+          <button type="button" class="icon-button" id="closeNewProject" aria-label="关闭">×</button>
+        </div>
+        <div class="manager-project-list" id="projectManagerList"></div>
+        <div class="manager-empty hidden" id="projectManagerEmpty">还没有项目，可以从下方添加第一个项目。</div>
+        <section class="manager-add-project">
+          <h3>添加新项目</h3>
+          <div class="manager-add-fields">
+            <label>项目名称<input id="newProjectName" maxlength="80" placeholder="例如：官网改版" /></label>
+            <label>负责人<input id="newProjectOwner" maxlength="60" placeholder="可不填" /></label>
+            <label>项目别名<input id="newProjectAliases" placeholder="多个名称用逗号分隔" /></label>
+            <button type="button" class="secondary" id="createProject">＋ 添加</button>
+          </div>
+        </section>
+        <p class="manager-note">删除项目不会删除资料或任务，它们会自动变成“未归属项目”。</p>
+        <div class="dialog-actions">
+          <button type="button" class="secondary" id="cancelNewProject">取消</button>
+          <button type="submit" class="primary" id="saveProjectManager">保存修改</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="settingsDialog">
+      <form method="dialog" id="settingsForm">
+        <div class="dialog-head">
+          <div><p class="eyebrow">SETTINGS</p><h2>工作台设置</h2></div>
+          <button class="icon-button" value="cancel" aria-label="关闭">×</button>
+        </div>
+
+        <div class="setting-section">
+          <label>本地资料库</label>
+          <div class="path-row"><code id="libraryPath">尚未选择</code><button type="button" class="secondary" id="changeLibrary">更改</button></div>
+        </div>
+
+        <div class="setting-section">
+          <div class="setting-title-row">
+            <div><label for="categoriesEnabled">资料分类</label><p>分类只是一种视图，可以关闭，也不会改变原件位置。</p></div>
+            <input id="categoriesEnabled" type="checkbox" />
+          </div>
+          <div class="editable-list" id="categoryList"></div>
+          <button type="button" class="text-button" id="addCategory">＋ 添加分类</button>
+        </div>
+
+        <div class="setting-section">
+          <div class="setting-title-row">
+            <div><label>项目管理</label><p>AI根据项目名称和别名提出建议，最终由用户确认。</p></div>
+            <button type="button" class="secondary compact" id="addProject">＋ 添加项目</button>
+          </div>
+          <div class="editable-list project-list" id="projectList"></div>
+          <p class="hint" id="projectEmptyHint">暂时没有项目；添加后才能使用项目时间线。</p>
+        </div>
+
+        <div class="setting-section ai-toggle-row">
+          <div><label for="aiEnabled">启用 AI 自动分类</label><p>关闭时仍会本地识别文字，并用基础规则分类。</p></div>
+          <input id="aiEnabled" type="checkbox" />
+        </div>
+
+        <div id="aiFields">
+          <div class="field-grid">
+            <label>AI 服务商<select id="provider"></select></label>
+            <label>模型名称<input id="model" autocomplete="off" /></label>
+          </div>
+          <label>接口地址<input id="baseUrl" type="url" autocomplete="off" /></label>
+          <label>API 密钥<input id="apiKey" type="password" autocomplete="new-password" placeholder="留空则保留已经保存的密钥" /></label>
+          <p class="hint" id="keyHint">密钥由系统安全存储，不写入工作资料库。</p>
+          <div class="test-row"><button type="button" class="secondary" id="testAi">测试连接</button><span id="testResult"></span></div>
+        </div>
+
+        <div class="privacy-note">
+          <strong>隐私边界</strong>
+          <p>原图不会发送给 AI。工作台只发送脱敏后的识别文字；发现“内部使用、公司机密、密码”等风险时会停止发送。</p>
+        </div>
+
+        <div class="dialog-actions">
+          <button value="cancel" class="secondary">取消</button>
+          <button type="button" class="primary" id="saveSettings">保存设置</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="aiReadyDialog" class="compact-dialog">
+      <div class="ai-ready-content">
+        <div class="ai-ready-mark">AI</div>
+        <p class="eyebrow">CONNECTION READY</p>
+        <h2>AI 连接成功</h2>
+        <p>保存设置后，工作台会开放文字记录、任务与截止日期提取、项目概览等功能。</p>
+        <ul>
+          <li>原始文件仍只保存在本地。</li>
+          <li>仅发送脱敏后的识别文字；检测到保密或密钥风险时会停止发送。</li>
+          <li>调用费用由你填写的 AI 服务商按其规则收取。</li>
+        </ul>
+        <button class="primary" id="closeAiReady">我知道了</button>
+      </div>
+    </dialog>
+
+    <dialog id="helpDialog" class="help-dialog">
+      <div class="help-page">
+        <div class="dialog-head">
+          <div><p class="eyebrow">HELP & CONTACT</p><h2>帮助与联系</h2></div>
+          <button type="button" class="icon-button" id="closeHelp" aria-label="关闭">×</button>
+        </div>
+        <section class="help-hero">
+          <span class="help-stamp">珊</span>
+          <div><h3>珊莎工作留痕</h3><p>把工作资料、任务和项目过程妥善留在自己的电脑里。</p></div>
+        </section>
+        <div class="help-columns">
+          <section class="help-card">
+            <span class="help-card-icon">⌁</span>
+            <h3>使用帮助</h3>
+            <p>查看产品说明、使用方法和后续更新。</p>
+            <button class="secondary" id="visitHelpSite">前往 shansha.xyz</button>
+          </section>
+          <section class="help-card contact-card">
+            <span class="help-card-icon">✉</span>
+            <h3>联系我</h3>
+            <p>联系方式稍后补充，这里会集中展示邮箱、微信或其他联系渠道。</p>
+            <dl><div><dt>联系方式</dt><dd>稍后公布</dd></div><div><dt>官方网站</dt><dd>shansha.xyz</dd></div></dl>
+            <button class="secondary" id="visitContactSite">打开官方网站</button>
+          </section>
+        </div>
+        <p class="help-tip">反馈问题时，建议同时说明电脑系统、操作步骤和看到的提示，方便更快定位。</p>
+      </div>
+    </dialog>
+
+    <dialog id="deleteRecordDialog" class="compact-dialog">
+      <form id="deleteRecordForm" class="delete-record-form">
+        <div class="dialog-head">
+          <div><p class="eyebrow">DELETE RECORD</p><h2>删除这条记录？</h2></div>
+          <button type="button" class="icon-button" id="closeDeleteRecord" aria-label="关闭">×</button>
+        </div>
+        <p id="deleteRecordName" class="delete-record-name"></p>
+        <div class="delete-warning"><strong>记录和原文件将一起移除</strong><span>工作台记录会删除，原文件会移到系统废纸篓；需要时仍可从废纸篓恢复。</span></div>
+        <div class="dialog-actions">
+          <button type="button" class="secondary" id="cancelDeleteRecord">取消</button>
+          <button type="submit" class="danger-button" id="confirmDeleteRecord">确认删除</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast hidden" id="toast"></div>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

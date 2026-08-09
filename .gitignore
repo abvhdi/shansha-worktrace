@@ -1,0 +1,29 @@
+node_modules/
+dist/
+release/
+out/
+build/
+
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+
+# 本地资料、用户记录与应用运行数据不得上传
+.worktrace/
+worktrace-data/
+资料库/
+原始资料/
+识别文字/
+
+# 本机生成的安装包与临时文件
+*.dmg
+*.exe
+*.msi
+*.zip
+*.tmp
+
+# macOS 本机编译出的 OCR 程序；源码保留在 native/ocr.swift
+native/worktrace-ocr

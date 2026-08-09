@@ -1,0 +1,26 @@
+const { contextBridge, ipcRenderer, webUtils } = require("electron");
+
+contextBridge.exposeInMainWorld("worktrace", {
+  getSettings: () => ipcRenderer.invoke("settings:get"),
+  chooseLibrary: () => ipcRenderer.invoke("settings:chooseLibrary"),
+  saveSettings: (input) => ipcRenderer.invoke("settings:save", input),
+  createProject: (input) => ipcRenderer.invoke("projects:create", input),
+  saveProjects: (projects) => ipcRenderer.invoke("projects:save", projects),
+  getProjectOverview: (projectId) => ipcRenderer.invoke("projects:getOverview", projectId),
+  generateProjectOverview: (projectId) => ipcRenderer.invoke("projects:generateOverview", projectId),
+  listTasks: () => ipcRenderer.invoke("tasks:list"),
+  createTask: (input) => ipcRenderer.invoke("tasks:create", input),
+  updateTask: (input) => ipcRenderer.invoke("tasks:update", input),
+  deleteTask: (id) => ipcRenderer.invoke("tasks:delete", id),
+  openExternal: (url) => ipcRenderer.invoke("app:openExternal", url),
+  testAi: (input) => ipcRenderer.invoke("ai:test", input),
+  chooseFiles: () => ipcRenderer.invoke("archive:chooseFiles"),
+  importFiles: (paths, supplementalText = "") => ipcRenderer.invoke("archive:import", { filePaths: paths, supplementalText }),
+  createTextRecord: (text) => ipcRenderer.invoke("archive:createText", text),
+  listRecords: () => ipcRenderer.invoke("archive:list"),
+  updateRecord: (input) => ipcRenderer.invoke("archive:updateRecord", input),
+  deleteRecord: (input) => ipcRenderer.invoke("archive:deleteRecord", input),
+  revealFile: (path) => ipcRenderer.invoke("archive:reveal", path),
+  pathForFile: (file) => webUtils.getPathForFile(file),
+  onProgress: (callback) => ipcRenderer.on("archive:progress", (_event, value) => callback(value)),
+});
