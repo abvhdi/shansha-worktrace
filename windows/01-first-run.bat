@@ -1,24 +1,24 @@
 @echo off
-chcp 65001 >nul
-title çŠèŽŽå·¥ä½œç•™ç—• - é¦–æ¬¡è¿è¡Œ
+chcp 936 >nul
+title ÉºÉ¯¹¤×÷ÁôºÛ - Ê×´ÎÔËÐÐ
 cd /d "%~dp0.."
 
 where node >nul 2>nul
 if errorlevel 1 goto no_node
 
-echo [1/2] æ­£åœ¨å‡†å¤‡ Windows è¿è¡Œç»„ä»¶ï¼Œç¬¬ä¸€æ¬¡å¯èƒ½éœ€è¦å‡ åˆ†é’Ÿ...
+echo [1/2] ÕýÔÚ×¼±¸ Windows ÔËÐÐ×é¼þ£¬µÚÒ»´Î¿ÉÄÜÐèÒª¼¸·ÖÖÓ...
 set ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
 call npm install
 if errorlevel 1 goto install_failed
 
-echo [2/2] æ­£åœ¨æ‰“å¼€çŠèŽŽå·¥ä½œç•™ç—•...
+echo [2/2] ÕýÔÚ´ò¿ªÉºÉ¯¹¤×÷ÁôºÛ...
 call npm start
 exit /b 0
 
 :no_node
 echo.
-echo è¿™å°ç”µè„‘è¿˜æ²¡æœ‰å®‰è£… Node.jsã€‚
-echo è¯·å…ˆå®‰è£… Node.js LTSï¼Œå†é‡æ–°åŒå‡»æœ¬æ–‡ä»¶ï¼š
+echo ÕâÌ¨µçÄÔ»¹Ã»ÓÐ°²×° Node.js¡£
+echo ÇëÏÈ°²×° Node.js LTS£¬ÔÙÖØÐÂË«»÷±¾ÎÄ¼þ£º
 echo https://nodejs.org/zh-cn/download
 echo.
 pause
@@ -26,8 +26,8 @@ exit /b 1
 
 :install_failed
 echo.
-echo è¿è¡Œç»„ä»¶å®‰è£…å¤±è´¥ï¼Œè¯·æ£€æŸ¥ç½‘ç»œåŽé‡è¯•ã€‚
-echo å¦‚æžœä»ç„¶å¤±è´¥ï¼Œè¯·æŠŠè¿™ä¸ªçª—å£çš„å†…å®¹æˆªå›¾å‘ç»™å¼€å‘è€…ã€‚
+echo ÔËÐÐ×é¼þ°²×°Ê§°Ü£¬Çë¼ì²éÍøÂçºóÖØÊÔ¡£
+echo Èç¹ûÈÔÈ»Ê§°Ü£¬Çë°ÑÕâ¸ö´°¿ÚµÄÄÚÈÝ½ØÍ¼·¢¸ø¿ª·¢Õß¡£
 echo.
 pause
 exit /b 1

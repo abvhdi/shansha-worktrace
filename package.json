@@ -1,11 +1,13 @@
 {
   "name": "worktrace-workbench",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "本地优先的个人工作留痕工作台原型",
+  "description": "珊莎工作留痕 - 本地工作资料整理台",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
+    "dist": "electron-builder --win",
+    "dist:mac": "electron-builder --mac zip --arm64",
     "build:ocr": "swiftc -O -framework Vision -framework AppKit native/ocr.swift -o native/worktrace-ocr",
     "test": "node --test"
   },
@@ -13,11 +15,55 @@
     "@tesseract.js-data/chi_sim": "^1.0.0",
     "mammoth": "^1.12.0",
     "pdf-parse": "^2.4.5",
+    "jszip": "^3.10.1",
     "tesseract.js": "^7.0.0",
-    "word-extractor": "^1.0.4"
+    "word-extractor": "^1.0.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "electron": "^38.0.0",
-    "jszip": "^3.10.1"
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.shansha.worktrace",
+    "productName": "珊莎工作留痕",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "mac": {
+      "target": [
+        "zip"
+      ],
+      "category": "public.app-category.productivity",
+      "artifactName": "Shansha-Worktrace-Mac-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "shortcutName": "珊莎工作留痕",
+      "artifactName": "Shansha-Worktrace-Setup-${version}.exe"
+    },
+    "asarUnpack": [
+      "node_modules/@tesseract.js-data/**",
+      "node_modules/tesseract.js-core/**",
+      "node_modules/tesseract.js/**",
+      "node_modules/pdfjs-dist/**",
+      "node_modules/@napi-rs/**",
+      "node_modules/mammoth/**",
+      "node_modules/pdf-parse/**",
+      "node_modules/xlsx/**",
+      "node_modules/jszip/**",
+      "node_modules/word-extractor/**"
+    ]
   }
 }

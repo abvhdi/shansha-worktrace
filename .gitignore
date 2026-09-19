@@ -25,5 +25,9 @@ worktrace-data/
 *.zip
 *.tmp
 
+# 本地界面自测结果与可由依赖重新提供的 OCR 数据副本
+src/selftest-result.json
+chi_sim.traineddata
+
 # macOS 本机编译出的 OCR 程序；源码保留在 native/ocr.swift
 native/worktrace-ocr

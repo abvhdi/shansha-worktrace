@@ -13,13 +13,14 @@
         <div><strong>珊莎工作留痕</strong><span>个人手账 · 本地收纳</span></div>
       </div>
       <nav>
-        <button class="nav-item active" data-view="today"><span>⌂</span>今天</button>
-        <button class="nav-item" data-view="timeline"><span>◇</span>项目管理</button>
+        <button class="nav-item active" data-view="today"><span>⌂</span>文件</button>
+        <button class="nav-item" data-view="tasks"><span>✓</span>任务</button>
+        <button class="nav-item" data-view="timeline"><span>◇</span>项目</button>
       </nav>
       <div class="sidebar-bottom">
         <div class="privacy-badge"><span>●</span> 原件仅保存在本地</div>
-        <button class="nav-item" id="openHelp"><span>?</span>帮助与联系</button>
-        <button class="nav-item" id="openSettings"><span>⚙</span>AI 与资料库设置</button>
+        <button class="nav-item" id="openSettings"><span>⚙</span>设置</button>
+        <button class="nav-item" id="openHelp"><span>?</span>帮助</button>
       </div>
     </aside>
 
@@ -30,18 +31,16 @@
           <h1 id="pageTitle">今天的工作记录</h1>
         </div>
         <div class="header-actions">
+          <button class="secondary" id="openAssistant">工作助手</button>
           <button class="secondary new-project-button" id="openNewProject">项目管理</button>
-          <label class="search-box">
-            <span>⌕</span>
-            <input id="searchInput" type="search" placeholder="搜索标题、内容或标签" />
-          </label>
         </div>
       </header>
+      <section class="notice-stack hidden" id="noticeStack" aria-live="assertive"></section>
 
       <section id="setupBanner" class="setup-banner hidden">
         <div>
-          <strong>先选择一个工作资料库</strong>
-          <p>原始文件和识别结果都会保存在你选择的文件夹中。</p>
+          <strong>先选择你正在使用的工作文件夹</strong>
+          <p>软件会识别里面已有的文件和第一层文件夹，不需要重新逐个导入。</p>
         </div>
         <button class="primary" id="chooseLibrary">选择文件夹</button>
       </section>
@@ -58,22 +57,19 @@
             <button data-project-page="overview">项目概览</button>
           </div>
         </div>
-        <label class="project-filter hidden" id="projectFilterWrap">查看项目<select id="projectFilter"></select></label>
+        <div class="timeline-right-tools">
+          <div class="timeline-date-picker hidden" id="timelineDateWrap">
+            <label>查看日期<input id="timelineDateInput" type="date" /></label>
+            <button type="button" class="secondary compact" id="clearTimelineDate">全部日期</button>
+          </div>
+        </div>
       </section>
 
       <section class="task-page hidden" id="taskPage">
-        <div class="task-stats" id="taskStats"></div>
         <form class="task-composer" id="taskComposer">
-          <div class="task-composer-head">
-            <div><h2>添加任务</h2><p>手工任务不会依附某个文件，可以单独管理。</p></div>
-            <button class="primary" type="submit" id="createTask">添加任务</button>
-          </div>
-          <input id="newTaskText" maxlength="300" required placeholder="输入需要完成的事情，例如：周五前提交合同修改稿" />
-          <div class="task-composer-fields">
-            <label>所属项目<select id="newTaskProject"><option value="">无项目</option></select></label>
-            <label>负责人<input id="newTaskOwner" maxlength="60" placeholder="可不填" /></label>
-            <label>截止日期<input id="newTaskDueDate" type="date" /></label>
-          </div>
+          <input id="newTaskText" maxlength="300" required placeholder="新建任务" aria-label="新建任务" />
+          <label class="task-composer-date"><span>截止日期</span><input id="newTaskDueDate" type="date" /></label>
+          <button class="primary" type="submit" id="createTask">新建</button>
         </form>
         <div class="task-toolbar">
           <div class="segmented" id="taskStatusFilter">
@@ -81,34 +77,46 @@
             <button data-task-status="all">全部</button>
             <button data-task-status="completed">已完成</button>
           </div>
-          <label>筛选项目<select id="taskProjectFilter"><option value="">全部项目</option></select></label>
+          <label class="workspace-search task-search"><span>⌕</span><input id="taskSearchInput" type="search" placeholder="搜索所有任务或关联文件" /></label>
+          <button type="button" class="secondary compact" id="createProjectFromTasks">从任务新建项目</button>
         </div>
         <div class="task-page-list" id="taskPageList"></div>
       </section>
 
       <section class="drop-card" id="dropZone">
         <div class="drop-icon">⌁</div>
-        <h2>把今天的资料收进来</h2>
-        <p>截图、PDF、Word 和文字文件都可以；原件留在本地，之后仍能随时调整。</p>
-        <div class="drop-note-row"><span>✦ 本地保存</span><span>○ 自动归整</span><span>⌇ 随时可改</span></div>
-        <div class="drop-actions"><button class="primary" id="pickFiles">选择文件</button></div>
-        <div class="text-capture">
-          <div><strong>也可以直接输入文字</strong><span id="textCaptureHint">填写 API 密钥并开启 AI 后可用</span></div>
-          <textarea id="textCapture" maxlength="50000" disabled placeholder="输入一段工作记录；如果随后拖入图片或选择文件，这段文字会作为补充说明一起整理。"></textarea>
-          <button class="secondary" id="saveTextRecord" disabled>保存为文字记录</button>
-        </div>
+        <h2>添加资料</h2>
+        <p>拖入文件、从电脑中选择，或直接新建一份文档。文件会整理进本地工作资料库。</p>
+        <div class="drop-actions"><button class="primary" id="pickFiles">选择文件</button><button class="secondary" id="openNewFile">新建文件</button></div>
         <div class="progress-wrap hidden" id="progressWrap">
           <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
           <span id="progressText">准备处理</span>
         </div>
       </section>
 
+      <label class="workspace-search file-search" id="fileSearchWrap"><span>⌕</span><input id="fileSearchInput" type="search" placeholder="搜索所有记录：文件名、正文、OCR、标签或任务" /></label>
+
       <section class="section-head" id="recordSectionHead">
-        <div><h2 id="recordHeading">最近记录</h2><span id="recordCount">0 条</span></div>
+        <div><h2 id="recordHeading">最近记录</h2><span id="recordCount">0 条</span><button class="secondary compact" id="toggleBatch" title="勾选多条记录统一设置项目">批量</button>
+            <button class="secondary compact" id="openFullTimeline" title="按时间线查看全部记录">全部记录 →</button></div>
         <div class="filter-pills" id="filters">
           <button class="active" data-filter="全部">全部</button>
         </div>
       </section>
+
+
+      <p class="list-hint">点击文件卡片展开，再点一次收起；“打开文件”可直接编辑原文件。</p>
+
+      <div class="batch-bar hidden" id="batchBar">
+        <span class="batch-count" id="batchCount">已选 0 条</span>
+        <button class="primary compact" id="batchChooseProject">选择归属项目</button>
+        <button class="secondary compact" id="deleteBatchSelected">删除选中</button>
+        <button class="secondary compact" id="exitBatch">退出</button>
+      </div>
+      <div class="project-filter project-filter-below hidden" id="projectFilterWrap">
+        <span>筛选项目</span>
+        <button type="button" class="secondary project-filter-button" id="openProjectFilter"><span id="projectFilterName">全部项目</span><span aria-hidden="true">⌄</span></button>
+      </div>
 
       <section class="project-overview hidden" id="projectOverview"></section>
       <section class="project-detail hidden" id="projectDetail"></section>
@@ -127,6 +135,19 @@
           <div><p class="eyebrow">PROJECTS</p><h2>项目管理</h2></div>
           <button type="button" class="icon-button" id="closeNewProject" aria-label="关闭">×</button>
         </div>
+        <section class="manager-group-controls">
+          <label>项目分组方式
+            <select id="projectGroupingMode">
+              <option value="none">不分组</option>
+              <option value="month">按项目月份</option>
+              <option value="custom">自定义分组</option>
+            </select>
+          </label>
+          <div class="manager-custom-groups hidden" id="managerCustomGroups">
+            <div class="manager-group-list" id="managerGroupList"></div>
+            <div class="manager-group-create"><input id="newProjectGroupName" maxlength="40" placeholder="输入新分组名称" /><button type="button" class="secondary compact" id="addProjectGroup">＋ 新建分组</button></div>
+          </div>
+        </section>
         <div class="manager-project-list" id="projectManagerList"></div>
         <div class="manager-empty hidden" id="projectManagerEmpty">还没有项目，可以从下方添加第一个项目。</div>
         <section class="manager-add-project">
@@ -154,26 +175,26 @@
         </div>
 
         <div class="setting-section">
-          <label>本地资料库</label>
+          <label>工作文件夹</label>
           <div class="path-row"><code id="libraryPath">尚未选择</code><button type="button" class="secondary" id="changeLibrary">更改</button></div>
+          <p class="hint">软件会识别这个文件夹已有的资料；第一层文件夹会同步成为标签。</p>
         </div>
 
         <div class="setting-section">
           <div class="setting-title-row">
-            <div><label for="categoriesEnabled">资料分类</label><p>分类只是一种视图，可以关闭，也不会改变原件位置。</p></div>
+            <div><label>备份与换电脑</label><p>备份项目、任务、标签和关联关系；不包含 API Key，也不会复制原文件。</p></div>
+            <div class="backup-actions"><button type="button" class="secondary compact" id="exportBackup">导出备份</button><button type="button" class="secondary compact" id="importBackup">恢复备份</button></div>
+          </div>
+          <p class="hint" id="backupStatus">换电脑时，先复制整个工作文件夹，再恢复这里导出的数据。</p>
+        </div>
+
+        <div class="setting-section">
+          <div class="setting-title-row">
+            <div><label for="categoriesEnabled">文件夹标签</label><p>标签与本地第一层文件夹同步；修改标签会同步修改文件夹和文件位置。</p></div>
             <input id="categoriesEnabled" type="checkbox" />
           </div>
           <div class="editable-list" id="categoryList"></div>
-          <button type="button" class="text-button" id="addCategory">＋ 添加分类</button>
-        </div>
-
-        <div class="setting-section">
-          <div class="setting-title-row">
-            <div><label>项目管理</label><p>AI根据项目名称和别名提出建议，最终由用户确认。</p></div>
-            <button type="button" class="secondary compact" id="addProject">＋ 添加项目</button>
-          </div>
-          <div class="editable-list project-list" id="projectList"></div>
-          <p class="hint" id="projectEmptyHint">暂时没有项目；添加后才能使用项目时间线。</p>
+          <button type="button" class="text-button" id="addCategory">＋ 新增标签和文件夹</button>
         </div>
 
         <div class="setting-section ai-toggle-row">
@@ -182,19 +203,25 @@
         </div>
 
         <div id="aiFields">
+          <datalist id="modelOptions"></datalist>
           <div class="field-grid">
             <label>AI 服务商<select id="provider"></select></label>
-            <label>模型名称<input id="model" autocomplete="off" /></label>
+            <label>模型<input id="model" list="modelOptions" autocomplete="off" placeholder="选择或输入模型名称" /></label>
           </div>
-          <label>接口地址<input id="baseUrl" type="url" autocomplete="off" /></label>
+          <label id="baseUrlRow" class="hidden">接口地址<input id="baseUrl" type="url" autocomplete="off" /></label>
           <label>API 密钥<input id="apiKey" type="password" autocomplete="new-password" placeholder="留空则保留已经保存的密钥" /></label>
-          <p class="hint" id="keyHint">密钥由系统安全存储，不写入工作资料库。</p>
-          <div class="test-row"><button type="button" class="secondary" id="testAi">测试连接</button><span id="testResult"></span></div>
+          <p class="hint" id="keyHint">可直接粘贴 Key；首尾空格、引号和 KEY= 前缀会自动处理。密钥由系统安全存储，不写入工作资料库。</p>
+          <div class="test-row" id="testResult" role="status" aria-live="polite" data-state="neutral">保存时会自动检查连接</div>
+          <div class="setting-section ai-toggle-row vision-toggle-row">
+            <div><label for="visionEnabled">混合识别模式</label><p>先在本地识别文字，再让支持看图的模型理解图形、表格和界面。</p></div>
+            <input id="visionEnabled" type="checkbox" />
+          </div>
+          <p class="vision-notice hidden" id="visionNotice">提醒：开启后，导入的图片会发送给你选择的 AI 服务商。请确认你有权上传相关工作资料，并选择支持图片识别的模型。</p>
         </div>
 
         <div class="privacy-note">
           <strong>隐私边界</strong>
-          <p>原图不会发送给 AI。工作台只发送脱敏后的识别文字；发现“内部使用、公司机密、密码”等风险时会停止发送。</p>
+          <p>关闭混合识别时只发送脱敏后的文字；开启后图片会发送给所选 AI 服务商。软件会显示风险提醒，但不会自动禁止上传。</p>
         </div>
 
         <div class="dialog-actions">
@@ -212,7 +239,7 @@
         <p>保存设置后，工作台会开放文字记录、任务与截止日期提取、项目概览等功能。</p>
         <ul>
           <li>原始文件仍只保存在本地。</li>
-          <li>仅发送脱敏后的识别文字；检测到保密或密钥风险时会停止发送。</li>
+          <li>混合识别开启时，图片会发送给所选 AI 服务商；检测到风险时会提醒，但不会自动拦截。</li>
           <li>调用费用由你填写的 AI 服务商按其规则收取。</li>
         </ul>
         <button class="primary" id="closeAiReady">我知道了</button>
@@ -246,6 +273,126 @@
         </div>
         <p class="help-tip">反馈问题时，建议同时说明电脑系统、操作步骤和看到的提示，方便更快定位。</p>
       </div>
+    </dialog>
+
+    <!-- 工作助手：读取可直接执行，所有写入操作都需要在界面中二次确认。 -->
+    <aside id="assistantPanel" class="assistant-panel hidden" aria-hidden="true">
+      <header class="assistant-head">
+        <div><p class="eyebrow">WORK ASSISTANT · 先预览后执行</p><h2>工作助手</h2><span class="assistant-note">可以查资料、读表格、分析项目，也能准备任务、项目和文件操作；写入前会先让你确认。</span></div>
+        <button type="button" class="icon-button" id="closeAssistant" aria-label="关闭">×</button>
+      </header>
+      <div class="assistant-context" id="assistantContext"></div>
+      <div class="assistant-log" id="assistantLog"></div>
+      <div class="assistant-suggest" id="assistantSuggest"></div>
+      <form class="assistant-input" id="assistantForm">
+        <textarea id="assistantText" rows="2"></textarea>
+        <button class="primary" type="submit" id="assistantSend">发送</button>
+      </form>
+    </aside>
+
+    <dialog id="taskLinkDialog" class="task-link-dialog">
+      <form id="taskLinkForm" class="task-link-form">
+        <div class="dialog-head">
+          <div><p class="eyebrow">LINK FILES</p><h2>关联文件</h2></div>
+          <button type="button" class="icon-button" id="closeTaskLink" aria-label="关闭">×</button>
+        </div>
+        <p class="task-link-task" id="taskLinkTask"></p>
+        <label class="task-link-search"><span>⌕</span><input id="taskLinkSearch" type="search" placeholder="搜索文件标题、摘要或标签" /></label>
+        <div class="task-link-list" id="taskLinkList"></div>
+        <div class="dialog-actions">
+          <button type="button" class="secondary" id="cancelTaskLink">取消</button>
+          <button type="submit" class="primary" id="saveTaskLinks">保存关联</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="recordTaskDialog" class="task-link-dialog">
+      <form id="recordTaskForm" class="task-link-form">
+        <div class="dialog-head">
+          <div><p class="eyebrow">LINK TASKS</p><h2>文件关联任务</h2></div>
+          <button type="button" class="icon-button" id="closeRecordTask" aria-label="关闭">×</button>
+        </div>
+        <p class="task-link-task" id="recordTaskName"></p>
+        <label class="task-link-search"><span>⌕</span><input id="recordTaskSearch" type="search" placeholder="搜索任务、项目或关联文件" /></label>
+        <div class="task-link-list" id="recordTaskList"></div>
+        <section class="record-task-create">
+          <div><strong>直接新建任务</strong><span>新任务会自动关联这份文件，并出现在任务列表中。</span></div>
+          <div class="record-task-create-fields">
+            <input id="recordTaskNewText" maxlength="300" placeholder="输入需要完成的事情" />
+            <label>截止日期<input id="recordTaskNewDue" type="date" /></label>
+            <button type="button" class="secondary" id="createRecordTask">＋ 新建并关联</button>
+          </div>
+        </section>
+        <div class="dialog-actions">
+          <button type="button" class="secondary" id="cancelRecordTask">取消</button>
+          <button type="submit" class="primary" id="saveRecordTasks">保存关联</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="projectPickerDialog" class="task-link-dialog">
+      <div class="task-link-form">
+        <div class="dialog-head">
+          <div><p class="eyebrow">CHOOSE PROJECT</p><h2>选择项目</h2></div>
+          <button type="button" class="icon-button" id="closeProjectPicker" aria-label="关闭">×</button>
+        </div>
+        <p class="task-link-task" id="projectPickerHint">选择这条记录所属的项目。</p>
+        <div class="project-picker-search-row">
+          <label class="task-link-search"><span>⌕</span><input id="projectPickerSearch" type="search" placeholder="搜索项目名称、别名或负责人" /></label>
+          <button type="button" class="secondary" id="createProjectFromPicker">＋ 新建项目</button>
+        </div>
+        <div class="task-link-list project-picker-list" id="projectPickerList"></div>
+        <div class="dialog-actions"><button type="button" class="secondary" id="cancelProjectPicker">取消</button></div>
+      </div>
+    </dialog>
+
+    <dialog id="projectTaskPickerDialog" class="task-link-dialog">
+      <form id="projectTaskPickerForm" class="task-link-form">
+        <div class="dialog-head">
+          <div><p class="eyebrow">ADD EXISTING TASKS</p><h2>添加已有任务</h2></div>
+          <button type="button" class="icon-button" id="closeProjectTaskPicker" aria-label="关闭">×</button>
+        </div>
+        <p class="task-link-task" id="projectTaskPickerName"></p>
+        <label class="task-link-search"><span>⌕</span><input id="projectTaskPickerSearch" type="search" placeholder="搜索尚未归入项目的任务" /></label>
+        <div class="task-link-list" id="projectTaskPickerList"></div>
+        <div class="dialog-actions">
+          <button type="button" class="secondary" id="cancelProjectTaskPicker">取消</button>
+          <button type="submit" class="primary" id="assignProjectTasks" disabled>加入当前项目</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="taskProjectCreateDialog" class="task-link-dialog">
+      <form id="taskProjectCreateForm" class="task-link-form">
+        <div class="dialog-head">
+          <div><p class="eyebrow">TASKS TO PROJECT</p><h2>从任务新建项目</h2></div>
+          <button type="button" class="icon-button" id="closeTaskProjectCreate" aria-label="关闭">×</button>
+        </div>
+        <label class="task-project-name">项目名称<input id="taskProjectName" maxlength="80" required placeholder="例如：九月客户交付" /></label>
+        <p class="task-link-task">选择尚未归入项目的任务。创建后，任务的截止日期和关联文件都会保留。</p>
+        <div class="task-link-list" id="taskProjectCreateList"></div>
+        <div class="dialog-actions">
+          <button type="button" class="secondary" id="cancelTaskProjectCreate">取消</button>
+          <button type="submit" class="primary" id="confirmTaskProjectCreate" disabled>创建项目</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="newFileDialog" class="compact-dialog">
+      <form id="newFileForm" class="new-file-form">
+        <div class="dialog-head">
+          <div><p class="eyebrow">NEW FILE</p><h2>新建文件</h2></div>
+          <button type="button" class="icon-button" id="closeNewFile" aria-label="关闭">×</button>
+        </div>
+        <div class="new-file-fields">
+          <label>文件类型<select id="newFileType"><option value="docx">Word 文档</option><option value="xlsx">Excel 表格</option><option value="pptx">PPT 演示文稿</option></select></label>
+          <label>文件名称<input id="newFileTitle" maxlength="120" required placeholder="输入文件名称" /></label>
+        </div>
+        <div class="dialog-actions">
+          <button type="button" class="secondary" id="cancelNewFile">取消</button>
+          <button type="submit" class="primary" id="createNewFile">创建并打开</button>
+        </div>
+      </form>
     </dialog>
 
     <dialog id="deleteRecordDialog" class="compact-dialog">

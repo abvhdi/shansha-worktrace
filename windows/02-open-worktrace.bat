@@ -1,6 +1,6 @@
 @echo off
-chcp 65001 >nul
-title çŠèå·¥ä½œç•™ç—•
+chcp 936 >nul
+title ÉºÉ¯¹¤×÷ÁôºÛ
 cd /d "%~dp0.."
 
 if not exist "node_modules\electron\dist\electron.exe" goto not_ready
@@ -8,6 +8,6 @@ call npm start
 exit /b 0
 
 :not_ready
-echo å°šæœªå®Œæˆé¦–æ¬¡å‡†å¤‡ï¼Œè¯·å…ˆåŒå‡»â€œ01-first-run.batâ€ã€‚
+echo ÉĞÎ´Íê³ÉÊ×´Î×¼±¸£¬ÇëÏÈË«»÷¡°01-first-run.bat¡±¡£
 pause
 exit /b 1
